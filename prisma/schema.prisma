@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum JobType {
+  CLT
+  PJ
+  JOVEM_APRENDIZ
+}
+
+model CompanyProfile {
+  id Int @id @default(autoincrement())
+  name String @unique
+  description String
+  foundation String
+  hiring Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  jobOpportunities JobOpportunity[]
+}
+
+model UserProfile {
+  id Int @id @default(autoincrement())
+  name String
+  email String
+  age Int
+  description String?
+  fieldOfWork String
+  technologies Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  curriculum Curriculum?
+  applications JobApplication[]
+}
+
+model JobOpportunity {
+  id Int @id @default(autoincrement())
+  companyId Int
+  companyName String
+  description String
+  details String
+  jobType JobType
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  company CompanyProfile @relation(fields: [companyId], references: [id])
+  applications JobApplication[]
+}
+
+model Curriculum {
+  id Int @id @default(autoincrement())
+  userId Int @unique
+  description String
+  details String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user UserProfile @relation(fields: [userId], references: [id])
+}
+
+model JobApplication {
+  id Int @id @default(autoincrement())
+  userId Int
+  jobId Int
+  appliedAt DateTime @default(now())
+
+  user UserProfile @relation(fields: [userId], references: [id])
+  job JobOpportunity @relation(fields: [jobId], references: [id])
+
+  @@unique([userId, jobId])
+}
