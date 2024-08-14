@@ -59,10 +59,18 @@ export const manipulatingCompany = {
   },
 
   create: async (data) => {
+    const company = await db.CompanyProfile.findUnique({
+      where: { name: data.name, CNPJ: data.CNPJ },
+    });
+
+    if (company) return false;
+
     return await db.CompanyProfile.create({
       data: {
         name: data.name,
         description: data.description,
+        CNPJ: data.CNPJ,
+        password: data.password,
         foundation: data.foundation,
         hiring: data.hiring,
       },
@@ -70,6 +78,14 @@ export const manipulatingCompany = {
   },
 
   edit: async (id, data) => {
+    const company = await db.CompanyProfile.findFirst({
+      where: {
+        OR: [{ name: data.name }, { CNPJ: data.CNPJ }],
+      },
+    });
+
+    if (company) return false;
+
     return await db.CompanyProfile.update({
       where: {
         id,
@@ -78,6 +94,8 @@ export const manipulatingCompany = {
       data: {
         name: data.name,
         description: data.description,
+        CNPJ: data.CNPJ,
+        password: data.password,
         foundation: data.foundation,
         hiring: data.hiring,
       },

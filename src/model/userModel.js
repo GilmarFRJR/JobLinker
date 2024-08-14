@@ -29,11 +29,21 @@ export const manipulatingUser = {
   },
 
   create: async (userData, curriculumData) => {
+    const user = await db.UserProfile.findUnique({
+      where: {
+        email: userData.email,
+      },
+    });
+
+    if (user) return false;
+
     return await db.UserProfile.create({
       data: {
         name: userData.name,
         email: userData.email,
+        password: userData.password,
         age: userData.age,
+        profilePhotoReference: userData.profilePhotoReference,
         description: userData.description,
         fieldOfWork: userData.fieldOfWork,
         technologies: userData.technologies,
@@ -53,6 +63,18 @@ export const manipulatingUser = {
   },
 
   edit: async (id, data) => {
+    const user = null;
+
+    if (data.email) {
+      user = await db.UserProfile.findUnique({
+        where: {
+          email: data.email,
+        },
+      });
+    }
+
+    if (user) return false;
+
     return await db.UserProfile.update({
       where: {
         id,
@@ -70,6 +92,12 @@ export const manipulatingUser = {
   },
 
   delete: async (id) => {
+    const curriculum = await db.Curriculum.delete({
+      where: {
+        userId: id,
+      },
+    });
+
     return await db.UserProfile.delete({
       where: {
         id,

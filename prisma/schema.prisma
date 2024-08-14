@@ -16,6 +16,8 @@ enum JobType {
 model CompanyProfile {
   id Int @id @default(autoincrement())
   name String @unique
+  CNPJ String @unique 
+  password String 
   description String
   foundation String
   hiring Boolean @default(true)
@@ -27,15 +29,17 @@ model CompanyProfile {
 model UserProfile {
   id Int @id @default(autoincrement())
   name String
-  email String
+  email String @unique
+  password String
   age Int
+  profilePhotoReference String?
   description String?
   fieldOfWork String
   technologies Json
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  curriculum Curriculum?
+  curriculum Curriculum? 
   applications JobApplication[]
 }
 

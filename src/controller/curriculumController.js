@@ -11,9 +11,6 @@ export const curriculumController = {
 
       res.status(200).json(curriculum);
     } catch (error) {
-      if (error instanceof z.ZodError) {
-        return res.status(400).json({ error: error.errors });
-      }
       res.status(500).json({ error: error.message });
     }
   },

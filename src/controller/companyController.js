@@ -1,4 +1,5 @@
 import { z } from "zod";
+import bcrypt from "bcrypt";
 
 import { manipulatingCompany } from "../model/companyModel.js";
 
@@ -52,9 +53,16 @@ export const companyController = {
     try {
       const data = createCompanySchema.parse(req.body);
 
+      const salt = await bcrypt.genSalt(10);
+      data.password = await bcrypt.hash(data.password, salt);
+
       const company = await manipulatingCompany.create(data);
 
-      res.status(201).json(company);
+      if (company) {
+        res.status(201).json(company);
+      } else {
+        res.status(409).json({ erro: "Empresa já registrada" });
+      }
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
@@ -65,12 +73,18 @@ export const companyController = {
       const id = parseInt(req.params.id, 10);
       const data = updateCompanySchema.parse(req.body);
 
+      const salt = await bcrypt.genSalt(10);
+      data.password = await bcrypt.hash(data.password, salt);
+
       const editedCompany = await manipulatingCompany.edit(id, data);
 
-      if (!editedCompany)
-        return res.status(404).json({ error: "Empresa não encontrada." });
-
-      res.status(200).json(editedCompany);
+      if (editedCompany) {
+        res.status(201).json(editedCompany);
+      } else {
+        res.status(409).json({
+          erro: "Esses novos dados já são usados por outra empresa (nome ou CNPJ",
+        });
+      }
     } catch (error) {
       res.status(500).json({ error: error.message });
     }

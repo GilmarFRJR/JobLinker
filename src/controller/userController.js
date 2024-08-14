@@ -1,4 +1,5 @@
 import { z } from "zod";
+import bcrypt from "bcrypt";
 
 import { manipulatingUser } from "../model/userModel.js";
 
@@ -34,13 +35,22 @@ export const userController = {
   createUser: async (req, res) => {
     try {
       const userData = createUserSchema.parse(req.body.userData);
-      const curriculumData = createCurriculumSchema.parse(
-        req.body.curriculumData
-      );
+      const curriculumData = req.body.curriculumData;
+
+      if (curriculumData) {
+        curriculumData = createCurriculumSchema.parse(req.body.curriculumData);
+      }
+
+      const salt = await bcrypt.genSalt(10);
+      userData.password = await bcrypt.hash(userData.password, salt);
 
       const user = await manipulatingUser.create(userData, curriculumData);
 
-      res.status(201).json(user);
+      if (user) {
+        res.status(201).json(user);
+      } else {
+        res.status(409).json({ erro: "Email já em uso." });
+      }
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
@@ -48,15 +58,19 @@ export const userController = {
 
   editUser: async (req, res) => {
     try {
-      const id = updateUserSchema.parse(parseInt(req.params.id, 10));
-      const data = req.body;
+      const id = parseInt(req.params.id, 10);
+      const data = updateUserSchema.parse(req.body);
+
+      const salt = await bcrypt.genSalt(10);
+      data.password = await bcrypt.hash(data.password, salt);
 
       const editedUser = await manipulatingUser.edit(id, data);
 
-      if (!editedUser)
-        return res.status(404).json({ error: "Usuário não encontrado." });
-
-      res.status(200).json(editedUser);
+      if (editedUser) {
+        res.status(201).json(editedUser);
+      } else {
+        res.status(409).json({ erro: "Email já em uso." });
+      }
     } catch (error) {
       if (error instanceof z.ZodError) {
         return res.status(400).json({ error: error.errors });
