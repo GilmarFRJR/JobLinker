@@ -5,10 +5,11 @@ import { manipulatingUser } from "../model/userModel.js";
 
 import { createUserSchema, updateUserSchema } from "../schemas/userSchemas.js";
 import { createCurriculumSchema } from "../schemas/curriculumSchema.js";
+import { json } from "express";
 
 export const userController = {
   getUser: async (req, res) => {
-    const id = parseInt(req.params.id, 10);
+    const id = parseInt(req.params.id, 10) || req.user.id;
 
     try {
       const user = await manipulatingUser.getOne(id);
@@ -34,7 +35,8 @@ export const userController = {
 
   createUser: async (req, res) => {
     try {
-      const userData = createUserSchema.parse(req.body.userData);
+      const userData = JSON.parse(req.body.jsonTxt);
+      createUserSchema.parse(userData);
       const curriculumData = req.body.curriculumData;
 
       if (curriculumData) {
@@ -58,7 +60,7 @@ export const userController = {
 
   editUser: async (req, res) => {
     try {
-      const id = parseInt(req.params.id, 10);
+      const id = req.user.id;
       const data = updateUserSchema.parse(req.body);
 
       const salt = await bcrypt.genSalt(10);
@@ -80,7 +82,7 @@ export const userController = {
   },
 
   deleteUser: async (req, res) => {
-    const id = parseInt(req.params.id, 10);
+    const id = parseInt(req.params.id, 10) || req.user.id;
 
     try {
       const deleteUser = await manipulatingUser.delete(id);
@@ -95,7 +97,7 @@ export const userController = {
   },
 
   getApplication: async (req, res) => {
-    const userId = parseInt(req.params.id, 10);
+    const userId = parseInt(req.params.id, 10) || req.user.id;
 
     try {
       const applications = await manipulatingUser.applicationsUser(userId);

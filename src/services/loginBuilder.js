@@ -7,17 +7,33 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export const loginBuilder = {
-  checkUserAndCreateToken: async (email, password) => {
+  checkAccountAndCreateToken: async (identifier, password, accountType) => {
     try {
-      const user = await loginDBconsult.getUserByEmail(email);
+      let account;
+      let token;
 
-      if (!user) return false;
+      if (accountType === "user") {
+        account = await loginDBconsult.getUserByEmail(identifier);
+      } else {
+        account = await loginDBconsult.getCompanyByCNPJ(identifier);
+      }
 
-      const isMatch = await bcrypt.compare(password, user.password);
+      if (!account) return false;
 
+      const isMatch = await bcrypt.compare(password, account.password);
       if (!isMatch) return false;
 
-      const token = JWT.sign({ id: user.id }, process.env.SECRET_KEY);
+      if (accountType === "user") {
+        token = JWT.sign(
+          { isCompany: false, id: account.id },
+          process.env.SECRET_KEY
+        );
+      } else {
+        token = JWT.sign(
+          { isCompany: true, id: account.id },
+          process.env.SECRET_KEY
+        );
+      }
 
       return token;
     } catch (err) {
@@ -25,13 +41,17 @@ export const loginBuilder = {
     }
   },
 
-  checkUser: async (id) => {
+  checkAccount: async (id, accountType) => {
     try {
-      const user = await loginDBconsult.getUserById(id);
+      let account;
 
-      if (user) return user;
+      if (accountType === "user") {
+        account = await loginDBconsult.getUserById(id);
+      } else {
+        account = await loginDBconsult.getCompanyById(id);
+      }
 
-      return false;
+      return account || false;
     } catch (err) {
       return err;
     }

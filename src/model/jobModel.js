@@ -9,6 +9,7 @@ export const manipulatingJob = {
         id,
       },
       select: {
+        id: true,
         companyName: true,
         description: true,
         details: true,
@@ -31,6 +32,7 @@ export const manipulatingJob = {
       take: pageSize,
 
       select: {
+        id: true,
         companyName: true,
         description: true,
         details: true,
@@ -80,10 +82,11 @@ export const manipulatingJob = {
     });
   },
 
-  edit: async (id, data) => {
+  edit: async (companyId, jobId, data) => {
     return await db.JobOpportunity.update({
       where: {
-        id,
+        id: jobId,
+        companyId,
       },
       data: {
         description: data.description,
@@ -93,17 +96,18 @@ export const manipulatingJob = {
     });
   },
 
-  delete: async (id) => {
+  delete: async (companyId, jobId) => {
     return await db.JobOpportunity.delete({
       where: {
-        id,
+        id: jobId,
+        companyId,
       },
     });
   },
 
-  applicationsJobs: async (jobId) => {
+  applicationsJobs: async (companyId, jobId) => {
     return await db.JobOpportunity.findUnique({
-      where: { id: jobId },
+      where: { id: jobId, companyId },
       select: {
         companyName: true,
         description: true,

@@ -61,7 +61,9 @@ export const companyController = {
       if (company) {
         res.status(201).json(company);
       } else {
-        res.status(409).json({ erro: "Empresa já registrada" });
+        res
+          .status(409)
+          .json({ erro: "Empresa com mesmo nome e/ou CNPJ já registrada" });
       }
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -70,7 +72,7 @@ export const companyController = {
 
   editCompany: async (req, res) => {
     try {
-      const id = parseInt(req.params.id, 10);
+      const id = req.company.id;
       const data = updateCompanySchema.parse(req.body);
 
       const salt = await bcrypt.genSalt(10);
@@ -91,7 +93,7 @@ export const companyController = {
   },
 
   deleteCompany: async (req, res) => {
-    const id = parseInt(req.params.id, 10);
+    const id = req.company.id;
 
     try {
       const deleteCompany = await manipulatingCompany.delete(id);

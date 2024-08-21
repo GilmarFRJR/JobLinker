@@ -11,15 +11,15 @@ import { jwtStrategyAuth } from "../Auth/middleware/authorization.js";
 
 const router = expess.Router();
 
-router.post("/teste", localStrategyAuth, (req, res) => {
+router.post("/JobLinker/login", localStrategyAuth, (req, res) => {
   const token = req.token;
   res.json({ token });
 });
 
-router.get("/privado", jwtStrategyAuth, (req, res) => {
-  const data = req.user;
+router.get("/teste", jwtStrategyAuth, (req, res) => {
+  const data = req.company || req.user;
 
-  res.json({ Mensagem: "Acessou!", dados: data });
+  res.json(req.user.id);
 });
 
 router.use("/user", userRoutes);

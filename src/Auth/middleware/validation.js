@@ -6,7 +6,7 @@ export const localStrategyAuth = (req, res, next) => {
       req.token = token;
       return next();
     } else {
-      res.status(401).json({ erro: "Acesso negado" });
+      res.status(401).json({ erro: "Acesso negado." });
     }
   });
 

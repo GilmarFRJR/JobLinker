@@ -4,17 +4,21 @@ import { loginBuilder } from "../../services/loginBuilder.js";
 
 export const localStrategy = new LocalStrategy(
   {
-    usernameField: "email",
+    usernameField: "identifier",
     passwordField: "password",
   },
-  async (email, password, done) => {
-    const userToken = await loginBuilder.checkUserAndCreateToken(
-      email,
-      password
+  async (identifier, password, done) => {
+    const isEmail = identifier.includes("@");
+    const accountType = isEmail ? "user" : "company";
+
+    const token = await loginBuilder.checkAccountAndCreateToken(
+      identifier,
+      password,
+      accountType
     );
 
-    if (userToken) {
-      return done(null, userToken);
+    if (token) {
+      return done(null, token);
     } else {
       return done(null, false);
     }

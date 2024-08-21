@@ -2,13 +2,11 @@ import { manipulatinApplication } from "../model/applicationModel.js";
 
 export const applicationController = {
   applyForJob: async (req, res) => {
-    const { userId, jobId } = req.query;
+    const userId = req.user.id;
+    const jobId = parseInt(req.params.id, 10);
 
     try {
-      const application = await manipulatinApplication.apply(
-        parseInt(userId, 10),
-        parseInt(jobId, 10)
-      );
+      const application = await manipulatinApplication.apply(userId, jobId);
 
       if (!application)
         return res

@@ -1,9 +1,9 @@
 import passport from "passport";
 
 export const jwtStrategyAuth = (req, res, next) => {
-  const authRequest = passport.authenticate("jwt", (err, user) => {
-    if (user) {
-      req.user = user;
+  const authRequest = passport.authenticate("jwt", (err, account) => {
+    if (account) {
+      account.isCompany ? (req.company = account) : (req.user = account);
       return next();
     } else {
       res

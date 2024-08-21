@@ -19,4 +19,23 @@ export const loginDBconsult = {
       },
     });
   },
+
+  getCompanyByCNPJ: async (CNPJ) => {
+    return await db.CompanyProfile.findUnique({
+      where: {
+        CNPJ,
+      },
+    });
+  },
+  getCompanyById: async (id) => {
+    return await db.CompanyProfile.findUnique({
+      where: {
+        id,
+      },
+      select: {
+        id: true,
+        CNPJ: true,
+      },
+    });
+  },
 };

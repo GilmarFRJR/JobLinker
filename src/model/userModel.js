@@ -7,6 +7,7 @@ export const manipulatingUser = {
         id,
       },
       select: {
+        id: true,
         name: true,
         email: true,
         description: true,
@@ -19,6 +20,7 @@ export const manipulatingUser = {
   getAll: async () => {
     return await db.UserProfile.findMany({
       select: {
+        id: true,
         name: true,
         email: true,
         description: true,

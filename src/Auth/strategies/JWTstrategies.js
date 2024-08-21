@@ -10,10 +10,12 @@ const options = {
 };
 
 export const jwtStrategy = new JWTStrategy(options, async (payload, done) => {
-  const user = await loginBuilder.checkUser(payload.id);
+  const accountType = payload.isCompany ? "company" : "user";
 
-  if (user) {
-    return done(null, user);
+  const account = await loginBuilder.checkAccount(payload.id, accountType);
+
+  if (account) {
+    return done(null, payload);
   } else {
     return done(null, false);
   }

@@ -5,7 +5,7 @@ import { createJobSchema, editJobSchema } from "../schemas/jobSchema.js";
 
 export const jobController = {
   getJob: async (req, res) => {
-    const id = parseInt(req.params.id, 10);
+    const id = parseInt(req.params.id, 10) || req.company.id;
 
     try {
       const job = await manipulatingJob.getOne(id);
@@ -51,7 +51,13 @@ export const jobController = {
 
   createJob: async (req, res) => {
     try {
-      const companyId = parseInt(req.params.id, 10);
+      if (!req.company || !req.company.id) {
+        return res
+          .status(403)
+          .json("Usuários comuns não podem acessar essa rota");
+      }
+
+      const companyId = req.company.id;
       const data = createJobSchema.parse(req.body);
 
       const job = await manipulatingJob.create(companyId, data);
@@ -64,10 +70,17 @@ export const jobController = {
 
   editJob: async (req, res) => {
     try {
-      const id = parseInt(req.params.id, 10);
+      if (!req.company || !req.company.id) {
+        return res
+          .status(403)
+          .json("Usuários comuns não podem acessar essa rota");
+      }
+
+      const companyId = req.company.id;
+      const jobId = parseInt(req.params.id, 10);
       const data = editJobSchema.parse(req.body);
 
-      const job = await manipulatingJob.edit(id, data);
+      const job = await manipulatingJob.edit(companyId, jobId, data);
 
       if (!job) return res.status(404).json("Essa vaga não existe.");
 
@@ -78,10 +91,16 @@ export const jobController = {
   },
 
   deleteJob: async (req, res) => {
-    const id = parseInt(req.params.id, 10);
+    if (!req.company || !req.company.id) {
+      return res
+        .status(403)
+        .json("Usuários comuns não podem acessar essa rota");
+    }
+    const companyId = req.company.id;
+    const jobId = parseInt(req.params.id, 10);
 
     try {
-      const job = await manipulatingJob.delete(id);
+      const job = await manipulatingJob.delete(companyId, jobId);
 
       if (!job) return res.status(404).json("Essa vaga não existe.");
 
@@ -92,10 +111,20 @@ export const jobController = {
   },
 
   getApplication: async (req, res) => {
+    if (!req.company || !req.company.id) {
+      return res
+        .status(403)
+        .json({ erro: "Usuários comuns não podem acessar essa rota" });
+    }
+
     const jobId = parseInt(req.params.id, 10);
+    const companyId = req.company.id;
 
     try {
-      const applications = await manipulatingJob.applicationsJobs(jobId);
+      const applications = await manipulatingJob.applicationsJobs(
+        companyId,
+        jobId
+      );
 
       res.status(200).json(applications);
     } catch (error) {

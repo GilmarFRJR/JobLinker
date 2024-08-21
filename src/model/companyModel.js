@@ -59,8 +59,10 @@ export const manipulatingCompany = {
   },
 
   create: async (data) => {
-    const company = await db.CompanyProfile.findUnique({
-      where: { name: data.name, CNPJ: data.CNPJ },
+    const company = await db.CompanyProfile.findFirst({
+      where: {
+        OR: [{ name: data.name }, { CNPJ: data.CNPJ }],
+      },
     });
 
     if (company) return false;
