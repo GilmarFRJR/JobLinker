@@ -65,7 +65,7 @@ export const manipulatingUser = {
   },
 
   edit: async (id, data) => {
-    const user = null;
+    let user = null;
 
     if (data.email) {
       user = await db.UserProfile.findUnique({
@@ -86,6 +86,7 @@ export const manipulatingUser = {
         name: data.name,
         email: data.email,
         age: data.age,
+        profilePhotoReference: data.profilePhotoReference,
         description: data.description,
         fieldOfWork: data.fieldOfWork,
         technologies: data.technologies,

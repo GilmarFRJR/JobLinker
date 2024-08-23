@@ -1,11 +1,10 @@
-import { z } from "zod";
 import bcrypt from "bcrypt";
 
 import { manipulatingUser } from "../model/userModel.js";
+import { resize } from "../imageProcessing/multer.js";
 
 import { createUserSchema, updateUserSchema } from "../schemas/userSchemas.js";
 import { createCurriculumSchema } from "../schemas/curriculumSchema.js";
-import { json } from "express";
 
 export const userController = {
   getUser: async (req, res) => {
@@ -35,16 +34,22 @@ export const userController = {
 
   createUser: async (req, res) => {
     try {
-      const userData = JSON.parse(req.body.jsonTxt);
-      createUserSchema.parse(userData);
-      const curriculumData = req.body.curriculumData;
+      const data = JSON.parse(req.body.jsonTxt);
+      const userData = createUserSchema.parse(data.userData);
+      const curriculumData = data.curriculumData;
 
       if (curriculumData) {
-        curriculumData = createCurriculumSchema.parse(req.body.curriculumData);
+        curriculumData = createCurriculumSchema.parse(curriculumData);
       }
 
       const salt = await bcrypt.genSalt(10);
       userData.password = await bcrypt.hash(userData.password, salt);
+
+      if (req.file) {
+        userData.profilePhotoReference = req.file.filename;
+
+        resize(req.file);
+      }
 
       const user = await manipulatingUser.create(userData, curriculumData);
 
@@ -61,10 +66,21 @@ export const userController = {
   editUser: async (req, res) => {
     try {
       const id = req.user.id;
-      const data = updateUserSchema.parse(req.body);
+      const dataNotVerified = JSON.parse(req.body.jsonTxt);
+      const data = updateUserSchema.parse(dataNotVerified);
 
-      const salt = await bcrypt.genSalt(10);
-      data.password = await bcrypt.hash(data.password, salt);
+      if (req.file) {
+        data.profilePhotoReference = req.file.filename;
+
+        await resize(req.file.path);
+      }
+
+      console.log(req.file.filename);
+
+      if (data.password) {
+        const salt = await bcrypt.genSalt(10);
+        data.password = await bcrypt.hash(data.password, salt);
+      }
 
       const editedUser = await manipulatingUser.edit(id, data);
 
@@ -74,9 +90,6 @@ export const userController = {
         res.status(409).json({ erro: "Email já em uso." });
       }
     } catch (error) {
-      if (error instanceof z.ZodError) {
-        return res.status(400).json({ error: error.errors });
-      }
       res.status(500).json({ error: error.message });
     }
   },
