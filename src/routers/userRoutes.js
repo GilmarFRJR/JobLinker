@@ -22,11 +22,6 @@ router.put(
 router.delete("/:id", jwtStrategyAuth, userController.deleteUser);
 
 const erroHandler = (err, req, res, next) => {
-  console.log(err); // Log completo do erro
-  console.log(err instanceof MulterError); // Verifica se é uma instância de MulterError
-  console.log(err.name); // Nome do erro
-  res.status(400);
-
   if (err.message === "Multer") {
     res.json({ Erro: "Imagem em formato inválido" });
   } else {
