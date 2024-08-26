@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { ZodError } from "zod";
 import bcrypt from "bcrypt";
 
 import { manipulatingCompany } from "../model/companyModel.js";
@@ -66,6 +66,12 @@ export const companyController = {
           .json({ erro: "Empresa com mesmo nome e/ou CNPJ já registrada" });
       }
     } catch (error) {
+      if (error instanceof ZodError) {
+        res.status(400).json({
+          Erro: "informações faltando ou em formato incorreto.",
+          Detalhes: error,
+        });
+      }
       res.status(500).json({ error: error.message });
     }
   },
@@ -88,6 +94,12 @@ export const companyController = {
         });
       }
     } catch (error) {
+      if (error instanceof ZodError) {
+        res.status(400).json({
+          Erro: "informações faltando ou em formato incorreto.",
+          Detalhes: error,
+        });
+      }
       res.status(500).json({ error: error.message });
     }
   },

@@ -1,3 +1,5 @@
+import { ZodError } from "zod";
+
 import { manipulatingCurriculum } from "../model/curriculumModel.js";
 import { createCurriculumSchema } from "../schemas/curriculumSchema.js";
 
@@ -15,6 +17,12 @@ export const curriculumController = {
 
       res.status(200).json(curriculum);
     } catch (error) {
+      if (error instanceof ZodError) {
+        res.status(400).json({
+          Erro: "informações faltando ou em formato incorreto.",
+          Detalhes: error,
+        });
+      }
       res.status(500).json({ error: error.message });
     }
   },

@@ -35,8 +35,8 @@ export const sendEmail = {
     } catch (error) {
       if (error instanceof ZodError) {
         res.status(400).json({
-          Erro: "informações faltando ou em formato incorreto. Detalhes:",
-          error,
+          Erro: "informações faltando ou em formato incorreto.",
+          Detalhes: error,
         });
       }
 

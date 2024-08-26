@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt";
+import { ZodError } from "zod";
 
 import { manipulatingUser } from "../model/userModel.js";
 import { resize } from "../imageProcessing/multer.js";
@@ -59,6 +60,12 @@ export const userController = {
         res.status(409).json({ erro: "Email já em uso." });
       }
     } catch (error) {
+      if (error instanceof ZodError) {
+        res.status(400).json({
+          Erro: "informações faltando ou em formato incorreto.",
+          Detalhes: error,
+        });
+      }
       res.status(500).json({ error: error.message });
     }
   },
@@ -90,6 +97,12 @@ export const userController = {
         res.status(409).json({ erro: "Email já em uso." });
       }
     } catch (error) {
+      if (error instanceof ZodError) {
+        res.status(400).json({
+          Erro: "informações faltando ou em formato incorreto.",
+          Detalhes: error,
+        });
+      }
       res.status(500).json({ error: error.message });
     }
   },

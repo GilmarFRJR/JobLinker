@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { ZodError } from "zod";
 
 import { manipulatingJob } from "../model/jobModel.js";
 import { createJobSchema, editJobSchema } from "../schemas/jobSchema.js";
@@ -64,6 +64,12 @@ export const jobController = {
 
       res.status(201).json(job);
     } catch (error) {
+      if (error instanceof ZodError) {
+        res.status(400).json({
+          Erro: "informações faltando ou em formato incorreto.",
+          Detalhes: error,
+        });
+      }
       res.status(500).json({ error: error.message });
     }
   },
@@ -86,6 +92,12 @@ export const jobController = {
 
       res.status(200).json(job);
     } catch (error) {
+      if (error instanceof ZodError) {
+        res.status(400).json({
+          Erro: "informações faltando ou em formato incorreto.",
+          Detalhes: error,
+        });
+      }
       res.status(500).json({ error: error.message });
     }
   },
