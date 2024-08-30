@@ -74,7 +74,7 @@ export const userController = {
     try {
       const id = req.user.id;
       const dataNotVerified = JSON.parse(req.body.jsonTxt);
-      const data = updateUserSchema.parse(dataNotVerified);
+      const data = updateUserSchema.parse(dataNotVerified.userData);
 
       if (req.file) {
         data.profilePhotoReference = req.file.filename;
