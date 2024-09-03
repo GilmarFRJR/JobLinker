@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "test": "set NODE_ENV=test && npx jest --runInBand",
+    "test:watch": "set NODE_ENV=test && npx jest --watch",
     "dev": "nodemon --watch src src/server.js"
   },
   "keywords": [],

@@ -114,11 +114,13 @@ export const jobController = {
     try {
       const job = await manipulatingJob.delete(companyId, jobId);
 
-      if (!job) return res.status(404).json("Essa vaga não existe.");
-
       res.status(200).json(job);
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      if (error.code === "P2025") {
+        res.status(404).json({ error: "Essa vaga não existe." });
+      } else {
+        res.status(500).json({ error: error.message });
+      }
     }
   },
 

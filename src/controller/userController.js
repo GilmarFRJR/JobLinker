@@ -49,7 +49,7 @@ export const userController = {
       if (req.file) {
         userData.profilePhotoReference = req.file.filename;
 
-        resize(req.file);
+        await resize(req.file);
       }
 
       const user = await manipulatingUser.create(userData, curriculumData);
@@ -79,10 +79,8 @@ export const userController = {
       if (req.file) {
         data.profilePhotoReference = req.file.filename;
 
-        await resize(req.file.path);
+        await resize(req.file);
       }
-
-      console.log(req.file.filename);
 
       if (data.password) {
         const salt = await bcrypt.genSalt(10);
