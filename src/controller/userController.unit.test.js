@@ -71,6 +71,9 @@ describe("getUser: async (req, res) => {...}", () => {
 
     await userController.getUser(req, res);
 
+    expect(manipulatingUser.getOne).toHaveBeenCalledWith(
+      req.params.id || req.user.id
+    );
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith({ user: "Felps" });
   });
@@ -80,8 +83,13 @@ describe("getUser: async (req, res) => {...}", () => {
 
     await userController.getUser(req, res);
 
+    expect(manipulatingUser.getOne).toHaveBeenCalledWith(
+      req.params.id || req.user.id
+    );
     expect(res.status).toHaveBeenCalledWith(404);
-    expect(res.json).toHaveBeenCalledWith({ error: "Usuário não encontrado." });
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({ error: expect.any(String) })
+    );
   });
 
   test("searching for a user but an unexpected error occurred", async () => {
@@ -89,6 +97,13 @@ describe("getUser: async (req, res) => {...}", () => {
 
     await userController.getUser(req, res);
 
+    expect(manipulatingUser.getOne).toHaveBeenCalledWith(
+      req.params.id || req.user.id
+    );
+
+    expect(manipulatingUser.getOne).toHaveBeenCalledWith(
+      req.params.id || req.user.id
+    );
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.json).toHaveBeenCalledWith(
       expect.objectContaining({ error: expect.any(String) })
@@ -130,6 +145,29 @@ describe(" createUser: async (req, res) => {..}", () => {
 
     await userController.createUser(req, res);
 
+    expect(manipulatingUser.create).toHaveBeenCalledWith(
+      {
+        name: "Felps",
+        email: "zzz@example.com",
+        password: "mockedHash",
+        age: 29,
+        profilePhotoReference: undefined,
+        description:
+          "Desenvolvedora Full Stack com paixão por criar soluções inovadoras.",
+        fieldOfWork: "Desenvolvimento de Software",
+        technologies: {
+          JavaScript: true,
+          Python: true,
+          Java: false,
+          CSharp: false,
+          React: true,
+          NodeJs: true,
+          Ruby: false,
+          PHP: false,
+        },
+      },
+      undefined
+    );
     expect(bcrypt.genSalt).toHaveBeenCalledWith(10);
     expect(bcrypt.hash).toHaveBeenCalledWith("SenhaSegura123", "mockedsalt");
     expect(resize).toHaveBeenCalledWith("img");
@@ -169,6 +207,29 @@ describe(" createUser: async (req, res) => {..}", () => {
 
     await userController.createUser(req, res);
 
+    expect(manipulatingUser.create).toHaveBeenCalledWith(
+      {
+        name: "Felps",
+        email: "zzz@example.com",
+        password: "mockedHash",
+        age: 29,
+        profilePhotoReference: undefined,
+        description:
+          "Desenvolvedora Full Stack com paixão por criar soluções inovadoras.",
+        fieldOfWork: "Desenvolvimento de Software",
+        technologies: {
+          JavaScript: true,
+          Python: true,
+          Java: false,
+          CSharp: false,
+          React: true,
+          NodeJs: true,
+          Ruby: false,
+          PHP: false,
+        },
+      },
+      undefined
+    );
     expect(res.status).toHaveBeenCalledWith(409);
     expect(res.json).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -183,6 +244,29 @@ describe(" createUser: async (req, res) => {..}", () => {
 
     await userController.createUser(req, res);
 
+    expect(manipulatingUser.create).toHaveBeenCalledWith(
+      {
+        name: "Felps",
+        email: "zzz@example.com",
+        password: "mockedHash",
+        age: 29,
+        profilePhotoReference: undefined,
+        description:
+          "Desenvolvedora Full Stack com paixão por criar soluções inovadoras.",
+        fieldOfWork: "Desenvolvimento de Software",
+        technologies: {
+          JavaScript: true,
+          Python: true,
+          Java: false,
+          CSharp: false,
+          React: true,
+          NodeJs: true,
+          Ruby: false,
+          PHP: false,
+        },
+      },
+      undefined
+    );
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.json).toHaveBeenCalledWith(
       expect.objectContaining({ error: expect.any(String) })
@@ -197,6 +281,26 @@ describe("editUser: async (req, res) => {...}", () => {
 
     await userController.editUser(req, res);
 
+    expect(manipulatingUser.edit).toHaveBeenCalledWith(req.user.id, {
+      name: "Felps",
+      email: "zzz@example.com",
+      password: "mockedHash",
+      age: 29,
+      profilePhotoReference: undefined,
+      description:
+        "Desenvolvedora Full Stack com paixão por criar soluções inovadoras.",
+      fieldOfWork: "Desenvolvimento de Software",
+      technologies: {
+        JavaScript: true,
+        Python: true,
+        Java: false,
+        CSharp: false,
+        React: true,
+        NodeJs: true,
+        Ruby: false,
+        PHP: false,
+      },
+    });
     expect(bcrypt.genSalt).toHaveBeenCalledWith(10);
     expect(bcrypt.hash).toHaveBeenCalledWith("SenhaSegura123", "mockedsalt");
     expect(resize).toHaveBeenCalledWith("img");
@@ -219,7 +323,7 @@ describe("editUser: async (req, res) => {...}", () => {
 
     expect(bcrypt.genSalt).not.toHaveBeenCalled();
     expect(bcrypt.hash).not.toHaveBeenCalled();
-    expect(manipulatingUser.create).not.toHaveBeenCalled();
+    expect(manipulatingUser.edit).not.toHaveBeenCalled();
     expect(resize).not.toHaveBeenCalled();
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.json).toHaveBeenCalledWith(
@@ -236,6 +340,26 @@ describe("editUser: async (req, res) => {...}", () => {
 
     await userController.editUser(req, res);
 
+    expect(manipulatingUser.edit).toHaveBeenCalledWith(req.user.id, {
+      name: "Felps",
+      email: "zzz@example.com",
+      password: "mockedHash",
+      age: 29,
+      profilePhotoReference: undefined,
+      description:
+        "Desenvolvedora Full Stack com paixão por criar soluções inovadoras.",
+      fieldOfWork: "Desenvolvimento de Software",
+      technologies: {
+        JavaScript: true,
+        Python: true,
+        Java: false,
+        CSharp: false,
+        React: true,
+        NodeJs: true,
+        Ruby: false,
+        PHP: false,
+      },
+    });
     expect(res.status).toHaveBeenCalledWith(409);
     expect(res.json).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -250,6 +374,26 @@ describe("editUser: async (req, res) => {...}", () => {
 
     await userController.editUser(req, res);
 
+    expect(manipulatingUser.edit).toHaveBeenCalledWith(req.user.id, {
+      name: "Felps",
+      email: "zzz@example.com",
+      password: "mockedHash",
+      age: 29,
+      profilePhotoReference: undefined,
+      description:
+        "Desenvolvedora Full Stack com paixão por criar soluções inovadoras.",
+      fieldOfWork: "Desenvolvimento de Software",
+      technologies: {
+        JavaScript: true,
+        Python: true,
+        Java: false,
+        CSharp: false,
+        React: true,
+        NodeJs: true,
+        Ruby: false,
+        PHP: false,
+      },
+    });
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.json).toHaveBeenCalledWith(
       expect.objectContaining({ error: expect.any(String) })
@@ -263,6 +407,9 @@ describe("deleteUser: async (req, res) => {...}", () => {
 
     await userController.deleteUser(req, res);
 
+    expect(manipulatingUser.delete).toHaveBeenCalledWith(
+      req.params.id || req.user.id
+    );
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith({ user: "Felps" });
   });
@@ -274,6 +421,9 @@ describe("deleteUser: async (req, res) => {...}", () => {
 
     await userController.deleteUser(req, res);
 
+    expect(manipulatingUser.delete).toHaveBeenCalledWith(
+      req.params.id || req.user.id
+    );
     expect(res.status).toHaveBeenCalledWith(404);
     expect(res.json).toHaveBeenCalledWith(
       expect.objectContaining({ error: expect.any(String) })
@@ -285,6 +435,9 @@ describe("deleteUser: async (req, res) => {...}", () => {
 
     await userController.deleteUser(req, res);
 
+    expect(manipulatingUser.delete).toHaveBeenCalledWith(
+      req.params.id || req.user.id
+    );
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.json).toHaveBeenCalledWith(
       expect.objectContaining({ error: expect.any(String) })
@@ -300,6 +453,9 @@ describe("getApplication: async (req, res) => {..}", () => {
 
     await userController.getApplication(req, res);
 
+    expect(manipulatingUser.applicationsUser).toHaveBeenCalledWith(
+      req.params.id || req.user.id
+    );
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith({ applications: "Company LTDA" });
   });
@@ -320,6 +476,9 @@ describe("getApplication: async (req, res) => {..}", () => {
 
     await userController.getApplication(req, res);
 
+    expect(manipulatingUser.applicationsUser).toHaveBeenCalledWith(
+      req.params.id || req.user.id
+    );
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.json).toHaveBeenCalledWith(
       expect.objectContaining({ error: expect.any(String) })

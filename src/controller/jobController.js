@@ -10,7 +10,7 @@ export const jobController = {
     try {
       const job = await manipulatingJob.getOne(id);
 
-      if (!job) return res.status(404).json("Essa vaga não existe.");
+      if (!job) return res.status(404).json({ error: "Essa vaga não existe." });
 
       res.status(200).json(job);
     } catch (error) {
@@ -41,7 +41,9 @@ export const jobController = {
       const jobs = await manipulatingJob.getJobsCompany(companyId);
 
       if (jobs.length === 0)
-        return res.status(404).json("Essa vaga não existe.");
+        return res
+          .status(404)
+          .json({ aviso: "Essa empresa não tem nenhuma vaga ativa." });
 
       res.status(200).json(jobs);
     } catch (error) {
@@ -88,7 +90,7 @@ export const jobController = {
 
       const job = await manipulatingJob.edit(companyId, jobId, data);
 
-      if (!job) return res.status(404).json("Essa vaga não existe.");
+      if (!job) return res.status(404).json({ aviso: "Essa vaga não existe." });
 
       res.status(200).json(job);
     } catch (error) {
