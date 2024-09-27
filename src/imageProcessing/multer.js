@@ -28,8 +28,8 @@ const fileFilter = (req, file, cb) => {
 export const resize = async (img) => {
   await sharp(img.path)
     .resize(300, 300)
-    .toFormat("jpeg")
-    .toFile(`imgDB/${img.filename}.jpeg`);
+    .toFormat("jpg")
+    .toFile(`imgDB/${img.filename}`);
 
   await unlink(img.path);
 };

@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import { ZodError } from "zod";
+import { object, ZodError } from "zod";
 
 import { manipulatingUser } from "../model/userModel.js";
 import { resize } from "../imageProcessing/multer.js";
@@ -37,7 +37,7 @@ export const userController = {
     try {
       const data = JSON.parse(req.body.jsonTxt);
       const userData = createUserSchema.parse(data.userData);
-      const curriculumData = data.curriculumData;
+      let curriculumData = data.curriculumData;
 
       if (curriculumData) {
         curriculumData = createCurriculumSchema.parse(curriculumData);
@@ -55,13 +55,13 @@ export const userController = {
       const user = await manipulatingUser.create(userData, curriculumData);
 
       if (user) {
-        res.status(201).json(user);
+        return res.status(201).json(user);
       } else {
-        res.status(409).json({ erro: "Email já em uso." });
+        return res.status(409).json({ erro: "Email já em uso." });
       }
     } catch (error) {
       if (error instanceof ZodError) {
-        res.status(400).json({
+        return res.status(400).json({
           Erro: "informações faltando ou em formato incorreto.",
           Detalhes: error,
         });
@@ -96,7 +96,7 @@ export const userController = {
       }
     } catch (error) {
       if (error instanceof ZodError) {
-        res.status(400).json({
+        return res.status(400).json({
           Erro: "informações faltando ou em formato incorreto.",
           Detalhes: error,
         });
@@ -110,7 +110,7 @@ export const userController = {
 
     try {
       const deleteUser = await manipulatingUser.delete(id);
-      res.status(200).json(deleteUser);
+      res.status(200).json(deleteUser.id);
     } catch (error) {
       if (error.code === "P2025") {
         res.status(404).json({ error: "Usuário não encontrado." });
@@ -126,8 +126,10 @@ export const userController = {
     try {
       const applications = await manipulatingUser.applicationsUser(userId);
 
-      if (!applications)
-        res.status(404).json({ error: "Usuário não encontrado." });
+      if (applications._count.applications === 0)
+        return res.status(404).json({
+          error: "Este usuário não se candidatou a nenhuma vaga ainda.",
+        });
 
       res.status(200).json(applications);
     } catch (error) {

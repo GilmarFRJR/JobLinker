@@ -4,7 +4,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "set NODE_ENV=test && npx jest --runInBand",
+    "test:unit": "set NODE_ENV=test && npx jest --testPathPattern=.unit.test.js --runInBand",
+    "test:integration": "set NODE_ENV=test && npx jest --testPathPattern=.integration.test.js --runInBand",
     "test:watch": "set NODE_ENV=test && npx jest --watch",
     "dev": "nodemon --watch src src/server.js"
   },

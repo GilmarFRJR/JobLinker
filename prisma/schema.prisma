@@ -64,7 +64,7 @@ model Curriculum {
   details String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  user UserProfile @relation(fields: [userId], references: [id])
+  user UserProfile @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model JobApplication {
@@ -73,7 +73,7 @@ model JobApplication {
   jobId Int
   appliedAt DateTime @default(now())
 
-  user UserProfile @relation(fields: [userId], references: [id])
+  user UserProfile @relation(fields: [userId], references: [id], onDelete: Cascade)
   job JobOpportunity @relation(fields: [jobId], references: [id])
 
   @@unique([userId, jobId])

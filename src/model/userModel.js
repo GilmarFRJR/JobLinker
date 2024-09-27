@@ -95,12 +95,6 @@ export const manipulatingUser = {
   },
 
   delete: async (id) => {
-    const curriculum = await db.Curriculum.delete({
-      where: {
-        userId: id,
-      },
-    });
-
     return await db.UserProfile.delete({
       where: {
         id,
